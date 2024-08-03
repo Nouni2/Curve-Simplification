@@ -8,7 +8,7 @@ P_in = [0, 0];  % Start point
 P_out = [1, 0]; % End point
 
 % Define the range of s values
-s_range = linspace(-10, 10, 1000);  % Vary s from -10 to 10
+s_range = linspace(-3, 3, 1000);  % Vary s from -10 to 10
 weights = zeros(size(s_range));     % Initialize weights array
 
 % Define coefficients for the weight calculation

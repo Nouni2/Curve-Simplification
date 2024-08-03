@@ -9,17 +9,29 @@ alpha = 0.4; % Curvature weight
 beta = 0.3;  % Angle weight
 gamma = 0.3; % Distance weight
 
-% Define control points for the animation
+% Define denser control points for the animation
 P = [0, 0; 
+     1, 1; 
+     2, 1.5;
      3, 2; 
+     4, 1.5;
+     5, 0; 
      6, -1; 
+     7.5, 1; 
      9, 3; 
+     10.5, 1.5;
      12, 0; 
+     13.5, 1; 
      15, 2; 
+     16.5, 0;
      18, -2; 
+     19.5, -0.5; 
      21, 1; 
+     22.5, 0.5; 
      24, 0];
-s_values = [0.7, -0.5, 0.6, -0.4, 0.5, -0.6, 0.3, -0.2];
+
+% Updated s_values to match the denser P
+s_values = [0.7, -0.5, 0.6, -0.3, -0.4, 0.5, -0.4, -0.6, 0.3, -0.2, 0.5, 0.4, -0.6, -0.4, 0.3, 0.2, 0.4, -0.2];
 
 % Calculate initial midpoints and directions
 [midpoints, directions] = compute_midpoints_and_directions(P);
@@ -58,21 +70,26 @@ grid on; % Add grid to the plot
 axis equal;
 pause(1);
 
-% Prepare for GIF creation
-filename = 'simplification_animation.gif'; % Output file name
-frameDelay = 0.05; % Delay between frames in seconds
-
-% Capture initial frame for GIF
-frame = getframe(gcf);
-im = frame2im(frame);
-[imind, cm] = rgb2ind(im, 256);
-imwrite(imind, cm, filename, 'gif', 'Loopcount', inf, 'DelayTime', frameDelay);
-
 % Set the minimum number of control points we want to keep
 min_points = 2;
 
 % Initialize step counter
 step = 1;
+
+% Set the boolean flag for saving the GIF
+save_gif = false; % Set to true if you want to save the animation as a GIF
+
+% Prepare for GIF creation if needed
+if save_gif
+    filename = 'simplification_animation.gif'; % Output file name
+    frameDelay = 0.1; % Delay between frames in seconds
+
+    % Capture initial frame for GIF
+    frame = getframe(gcf);
+    im = frame2im(frame);
+    [imind, cm] = rgb2ind(im, 256);
+    imwrite(imind, cm, filename, 'gif', 'Loopcount', inf, 'DelayTime', frameDelay);
+end
 
 % Simplification loop
 while size(P, 1) > min_points
@@ -148,11 +165,13 @@ while size(P, 1) > min_points
         grid on; % Ensure grid is on during animation
         drawnow;
 
-        % Capture and save the current frame to GIF
-        frame = getframe(gcf);
-        im = frame2im(frame);
-        [imind, cm] = rgb2ind(im, 256);
-        imwrite(imind, cm, filename, 'gif', 'WriteMode', 'append', 'DelayTime', frameDelay);
+        % Capture and save the current frame to GIF if save_gif is true
+        if save_gif
+            frame = getframe(gcf);
+            im = frame2im(frame);
+            [imind, cm] = rgb2ind(im, 256);
+            imwrite(imind, cm, filename, 'gif', 'WriteMode', 'append', 'DelayTime', frameDelay);
+        end
     end
 
     % Update for next iteration
