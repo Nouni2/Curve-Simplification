@@ -1,30 +1,33 @@
 function bezier_curve_points = construct_curve(P, S_points)
-    % construct_curve: Construit la courbe de Bézier quadratique en utilisant les points de contrôle S
-    % Entrée: 
-    %   P - Matrice des points de contrôle
-    %   S_points - Points de contrôle intermédiaires S
-    % Sortie:
-    %   bezier_curve_points - Points de la courbe de Bézier
+    % construct_curve: Constructs the quadratic Bézier curve using control points S
+    % Input: 
+    %   P - Matrix of control points
+    %   S_points - Intermediate control points S
+    % Output:
+    %   bezier_curve_points - Points of the Bézier curve
 
-    % Nombre de segments
+    % Number of segments
     num_segments = size(P, 1) - 1;
-    bezier_curve_points = [];
+    
+    % Number of points per segment for smooth curves
+    num_points_per_segment = 100;
+    
+    % Preallocate memory for Bézier curve points
+    bezier_curve_points = zeros(num_segments * num_points_per_segment, 2);
 
-    % Construire chaque segment de Bézier
+    % Parameter t for Bézier curve
+    t = linspace(0, 1, num_points_per_segment);
+    T = [((1-t).^2)' 2*(1-t)'.*t' (t.^2)']; % Precompute powers of t
+    
+    % Control points matrices
+    P0 = P(1:end-1, :);
+    P1 = S_points;
+    P2 = P(2:end, :);
+
+    % Vectorized computation of Bézier curve points
     for i = 1:num_segments
-        p0 = P(i, :);
-        p1 = S_points(i, :);
-        p2 = P(i+1, :);
-        
-        % Paramètre t pour la courbe de Bézier
-        t = linspace(0, 1, 100); % Plus de points pour une courbe lisse
-        
-        % Calcul des points de la courbe de Bézier
-        B_t_x = (1-t).^2 * p0(1) + 2*(1-t).*t * p1(1) + t.^2 * p2(1);
-        B_t_y = (1-t).^2 * p0(2) + 2*(1-t).*t * p1(2) + t.^2 * p2(2);
-        
-        % Ajouter les points au tableau des courbes
-        B_t = [B_t_x' B_t_y']; % Transpose pour correspondre à la structure des lignes
-        bezier_curve_points = [bezier_curve_points; B_t];
+        % Compute each segment points in a vectorized manner
+        bezier_curve_points((i-1) * num_points_per_segment + 1 : i * num_points_per_segment, :) = ...
+            T(:, 1) * P0(i, :) + T(:, 2) * P1(i, :) + T(:, 3) * P2(i, :);
     end
 end

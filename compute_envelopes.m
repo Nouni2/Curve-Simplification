@@ -1,20 +1,19 @@
 function [upper_envelope, lower_envelope] = compute_envelopes(bezier_curve_points, epsilon)
-    % compute_envelopes: Calculer les enveloppes \Gamma + \epsilon et \Gamma - \epsilon
-    % Entrée:
-    %   bezier_curve_points - Points de la courbe de Bézier
-    %   epsilon - Tolérance d'erreur
-    % Sortie:
-    %   upper_envelope - Enveloppe supérieure
-    %   lower_envelope - Enveloppe inférieure
+    % compute_envelopes: Compute the envelopes \Gamma + \epsilon and \Gamma - \epsilon
+    % Input:
+    %   bezier_curve_points - Points of the Bézier curve
+    %   epsilon - Error tolerance
+    % Output:
+    %   upper_envelope - Upper envelope
+    %   lower_envelope - Lower envelope
 
-    % Calculer les directions normales à la courbe
+    % Calculate the normal directions to the curve
     dx = gradient(bezier_curve_points(:, 1));
     dy = gradient(bezier_curve_points(:, 2));
     magnitudes = sqrt(dx.^2 + dy.^2);
-    normals_x = -dy ./ magnitudes;
-    normals_y = dx ./ magnitudes;
+    normals = [-dy ./ magnitudes, dx ./ magnitudes]; % Combined normal vectors
 
-    % Calculer les enveloppes
-    upper_envelope = bezier_curve_points + epsilon * [normals_x normals_y];
-    lower_envelope = bezier_curve_points - epsilon * [normals_x normals_y];
+    % Calculate the envelopes using vectorized operations
+    upper_envelope = bezier_curve_points + epsilon * normals;
+    lower_envelope = bezier_curve_points - epsilon * normals;
 end
